@@ -89,7 +89,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        env_prefix="WHAT2EAT_",  # 添加前缀，避免环境变量冲突
+        env_prefix="",  # 添加前缀，避免环境变量冲突
     )
 
 
