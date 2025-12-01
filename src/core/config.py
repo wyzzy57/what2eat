@@ -4,6 +4,19 @@ from typing import Literal
 from pydantic import computed_field, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# 这个文件是应用的配置中心，使用Pydantic Settings管理：
+
+# - 定义应用基本信息（名称、调试模式）
+# - 支持两种数据库类型：PostgreSQL和SQLite
+# - 包含完整的数据库连接参数和连接池配置
+# - 提供Redis连接配置（认证和缓存）
+# - 配置JWT密钥
+# - 使用计算属性动态生成：
+#   - 数据库连接URL
+#   - SQLAlchemy引擎选项
+#   - Redis连接URL
+# - 从.env文件加载环境变量
+
 
 class Settings(BaseSettings):
     """应用配置（支持 PostgreSQL 和 SQLite，含连接池设置，兼容 SQLModel 异步使用）"""
@@ -12,7 +25,7 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # 数据库类型
-    db_type: Literal["postgres", "sqlite"] = "sqlite"
+    db_type: Literal["postgres", "sqlite"] = "postgres"
 
     # PostgreSQL 配置
     db_host: str = "localhost"
@@ -45,7 +58,7 @@ class Settings(BaseSettings):
         """根据数据库类型生成对应的数据库连接URL"""
         if self.db_type == "postgres":
             return (
-                f"postgresql+asyncpg://{self.db_user}:{self.db_password}"
+                f"postgresql+psycopg://{self.db_user}:{self.db_password}"
                 f"@{self.db_host}:{self.db_port}/{self.db_name}"
             )
         elif self.db_type == "sqlite":
