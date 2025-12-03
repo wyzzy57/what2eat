@@ -1,17 +1,18 @@
+    # 导入你在 schemas.py 里定义的模型      
+from src.dishes.schema import (
+    DishCreate,
+    DishPublic,  # 注意：之前我们定义的是 DishPublic，你这里叫 DishResponse，我都兼容
+    DishUpdate,
+)
 from sqlalchemy.exc import IntegrityError
 
-from src.dishes.repository import DishRepository
 # 假设你定义了这些自定义异常
-from src.core.exception  import (
-    NotFoundException,
+from src.core.exception import (
     AlreadyExistsException,
+    NotFoundException,
 )
-# 导入你在 schemas.py 里定义的模型
-from schema import (
-    DishCreate,
-    DishUpdate,
-    DishPublic, # 注意：之前我们定义的是 DishPublic，你这里叫 DishResponse，我都兼容
-)
+from src.dishes.repository import DishRepository
+
 
 class DishService:
     """
@@ -32,7 +33,7 @@ class DishService:
         try:
             # 直接把 Schema 扔给 Repository
             new_dish = await self.repository.create(dish_in)
-            
+
             # 把数据库实体 (Dish) 转回 响应模型 (DishPublic)
             return DishPublic.model_validate(new_dish)
         # 这行代码的作用是捕获数据库层面的“唯一性冲突”。
@@ -48,9 +49,11 @@ class DishService:
         dish = await self.repository.get_by_id(dish_id)
         if not dish:
             raise NotFoundException(f"Dish with id {dish_id} not found")
-        
-        return DishPublic.model_validate(dish)
 
+        return DishPublic.model_validate(dish)
+    # 这行代码的作用是获取所有菜品。
+    # 它的参数是一些查询参数，用于分页、搜索、排序等。
+    # 它的返回值是一个包含多个 DishPublic 模型的列表。
     async def list_dishes(
         self,
         *,
@@ -60,7 +63,7 @@ class DishService:
         limit: int = 10,
         offset: int = 0,
     ) -> list[DishPublic]:
-        
+
         dishes = await self.repository.get_all(
             search=search,
             order_by=order_by,
@@ -68,8 +71,12 @@ class DishService:
             limit=limit,
             offset=offset,
         )
-        
+
         # 列表推导式：把一堆 DB Model 转成一堆 Public Schema
+        #model_validate() 方法的作用是把一个 DB Model 实例转换为一个 Public Schema 实例。
+        # 这样做的好处是：
+        # 1. 隐藏了数据库的实现细节，前端只需要知道 DishPublic 模型的字段。
+        # 2. 可以对数据进行验证和转换，确保数据的完整性和一致性。
         return [DishPublic.model_validate(dish) for dish in dishes]
 
     # 这行代码的作用是更新数据库中 ID 为 dish_id 的记录。
@@ -79,12 +86,12 @@ class DishService:
         # 我们不需要在 Service 层做 dump，直接传给 Repo
         try:
             updated_dish = await self.repository.update(dish_id, dish_in)
-            
+
             if not updated_dish:
                 raise NotFoundException(f"Dish with id {dish_id} not found")
-                
+
             return DishPublic.model_validate(updated_dish)
-            
+
         except IntegrityError as e:
             # 比如更新名字时，和别的菜名冲突了
             raise AlreadyExistsException("Dish with this name already exists") from e

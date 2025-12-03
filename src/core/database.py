@@ -2,7 +2,7 @@
 from typing import AsyncGenerator
 
 from loguru import logger
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel
 
 from src.core.config import settings
@@ -43,9 +43,8 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 #SQLModel.metadata 就像一个花名册。当你定义了 class User(SQLModel, table=True) 时，User 就自动签到进了这个花名册。
 async def create_db_and_tables():
     # 导入所有模型类，确保它们被注册到 metadata
-    from src.dishes.model import Dish
     # 导入 Collection 模型
-    from src.collections.model import Collection
+    from src.dishes.model import Dish, Collection
     print(f"🕵️‍♂️ 侦探报告：当前正在连接的数据库是: {settings.database_url}")
     async with engine.begin() as conn:
         # 使用 SQLModel 的 metadata 创建所有表

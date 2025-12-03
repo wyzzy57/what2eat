@@ -1,15 +1,15 @@
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 
 from src.core.config import settings
 from src.core.exception import register_exception_handlers
-from src.lifespan import lifespan # 🟢 关键：导入生命周期管理
 
 # 导入各个模块的路由
 # 注意：你需要确保 src/dishes/router.py 已经写好了（我们之前还没写这个文件，下一步必须补上）
-#from src.dishes.router import router as dishes_router
-# from src.collections.router import router as collections_router
-# from src.weather.router import router as weather_router
+from src.dishes.router import router as dishes_router
+from src.lifespan import lifespan  # 🟢 关键：导入生命周期管理
+
+#from src.collections.router import router as collections_router
+#from src.weather.router import router as weather_router
 
 # 如果你有 FastAPI Users，取消注释
 # from src.auth.user_manager import fastapi_users
@@ -28,7 +28,11 @@ register_exception_handlers(app)
 
 # 2. 注册路由 (建议加上 api 前缀)
 # 这样访问路径变成: POST /api/v1/dishes
-#app.include_router(dishes_router, prefix="/api/v1", tags=["Dishes"])
+#tags 用于分组，方便在 Swagger UI 中查看
+#不用tags访问路径是怎样的：POST /api/v1/dishes
+#加api前缀干嘛：为了避免与其他路由冲突，加上api前缀
+#加v1干嘛：为了版本管理，v1表示第一版，以后有新的版本可以加上v2,v3...
+app.include_router(dishes_router, prefix="/api/v1", tags=["Dishes"])
 
 # 以后写好了 Collection 再解开
 # app.include_router(collections_router, prefix="/api/v1", tags=["Collections"])

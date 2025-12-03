@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Literal, Optional
-from sqlmodel import SQLModel, Field
+
+from sqlmodel import Field, SQLModel
+
 
 #这就是pydantic模型
 # 它的作用是定义数据模型的结构和验证规则。

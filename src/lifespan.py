@@ -5,18 +5,18 @@
 # 为什么后面的代码没有连接数据库？
 # 因为在 lifespan 函数中，我们只需要创建数据库表，而不需要连接数据库
 # 连接数据库的操作会在 create_db_and_tables 函数中执行
-from typing import TypedDict
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import TypedDict
 
 from fastapi import FastAPI
-from redis.asyncio import Redis
 from httpx import AsyncClient
 from loguru import logger
-
-from src.core.redis_db import create_auth_redis, create_cache_redis
+from redis.asyncio import Redis
 
 from src.core.database import create_db_and_tables
+from src.core.redis_db import create_auth_redis, create_cache_redis
+
 
 # 定义应用状态类型
 # 用于在应用运行时传递 Redis 连接、HTTP 客户端等资源
@@ -32,7 +32,7 @@ class State(TypedDict):
 async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     # -------- 启动 --------
     logger.info("应用启动，开始加载所有资源...")
-    # 创建数据库表 
+    # 创建数据库表
     await create_db_and_tables()
 
     auth_redis = create_auth_redis()

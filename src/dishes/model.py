@@ -1,11 +1,10 @@
-from typing import TYPE_CHECKING, Optional, List
-from sqlmodel import SQLModel, Field, Relationship, Text
+from typing import TYPE_CHECKING, List, Optional
+
+from sqlmodel import Field, Relationship, SQLModel, Text
 
 # 假设你已经定义好了 DateTimeMixin
-from src.core.base_model import DateTimeMixin
+from src.core.base_model import DateTimeMixin,Base
 
-if TYPE_CHECKING:
-    from model import Collection
 
 
 # ==========================================
@@ -50,4 +49,15 @@ class Dish(SQLModel, DateTimeMixin, table=True):
     collections: List["Collection"] = Relationship(
         back_populates="dishes", #建立双向联系
         link_model=CollectionDishLink  # <--- 这里必须传入中间表类，指定去哪查找
+    )
+class Collection(Base, DateTimeMixin, table=True):
+    __tablename__ = "collections"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255, nullable=False)
+
+    # 🟢【修正 2】link_model 必须传类 (CollectionDishLink)，不能传字符串
+    dishes: List["Dish"] = Relationship(
+        back_populates="collections",
+        link_model=CollectionDishLink  # <--- 去掉引号！
     )

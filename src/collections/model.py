@@ -1,5 +1,7 @@
-from typing import List, Optional, TYPE_CHECKING
-from sqlmodel import SQLModel, Field, Relationship
+from typing import TYPE_CHECKING, List, Optional
+
+from sqlmodel import Field, Relationship
+
 from src.core.base_model import Base, DateTimeMixin
 
 # 🟢【修正 1】必须在运行时导入中间表类！

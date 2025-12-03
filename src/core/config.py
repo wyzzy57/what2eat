@@ -1,7 +1,7 @@
 # /src/core/config.py
 from typing import Literal
 
-from pydantic import computed_field, Field
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 这个文件是应用的配置中心，使用Pydantic Settings管理：

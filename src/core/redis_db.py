@@ -3,7 +3,9 @@ from typing import cast
 
 from fastapi import Request
 from redis.asyncio import Redis
+
 from src.core.config import settings
+
 
 # 创建认证 Redis 连接
 # 认证 Redis 连接用于存储用户认证信息，例如会话 ID、访问令牌等

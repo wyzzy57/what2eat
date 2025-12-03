@@ -1,10 +1,11 @@
 from typing import List, Optional
-from sqlmodel import select, col, desc, asc
-from sqlmodel.ext.asyncio.session import AsyncSession
+
+from src.dishes.schema import DishCreate, DishUpdate
 from sqlalchemy.exc import IntegrityError
+from sqlmodel import asc, col, desc, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.dishes.model import Dish
-from schema import DishCreate, DishUpdate
 
 
 class DishRepository:
@@ -63,7 +64,7 @@ class DishRepository:
         # 假设你有一个 dish_id = 123，你可以这样调用：
         # dish = await dish_repo.get_by_id(123)
         # 如果数据库中 ID 为 123 的记录存在，dish 就会是一个 Dish 对象；如果不存在，dish 就会是 None。
-       
+
         return await self.session.get(Dish, dish_id)
 
     # 🟡 变化 2: 查询逻辑微调 (select 来自 sqlmodel)
@@ -101,7 +102,7 @@ class DishRepository:
 
         # getattr 动态获取字段对象 (Dish.id, Dish.name ...)
         # 这行代码的作用是根据 order_by 字符串，动态获取 Dish 类里对应的字段对象。
-        # 比如如果 order_by 是 "name"，就会获取 Dish.name 这个字段对象。 
+        # 比如如果 order_by 是 "name"，就会获取 Dish.name 这个字段对象。
         #getattr 就是 Python 的魔法函数，它可以把字符串变成属性对象
         sort_column = getattr(Dish, order_by)
 
@@ -159,7 +160,7 @@ class DishRepository:
         await self.session.commit()
         await self.session.refresh(dish)
         return dish
-    
+
     async def delete(self, dish_id: int) -> bool:
         dish = await self.session.get(Dish, dish_id)
         if not dish:

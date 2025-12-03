@@ -1,19 +1,16 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-
 # 这个文件定义了应用中所有数据模型的基础结构：
-
 # - 设置了数据库对象（索引、唯一约束、外键等）的命名约定
 # - 创建了 Base 基类，所有SQLModel模型都可以继承它
 # - 定义了 DateTimeMixin 混入类，为模型提供时间戳功能：
 #   - created_at ：记录创建时间
 #   - updated_at ：记录最后更新时间
 #   - 针对PostgreSQL和SQLite提供了不同的实现方式，确保兼容性
-
 # 1. 引入 Column
-from sqlalchemy import func, DateTime, Column
-from sqlmodel import SQLModel, Field
+from sqlalchemy import Column, DateTime, func
+from sqlmodel import Field, SQLModel
 
 from src.core.config import settings
 
